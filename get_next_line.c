@@ -6,7 +6,7 @@
 /*   By: upierre- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/21 12:45:55 by upierre-          #+#    #+#             */
-/*   Updated: 2016/05/29 17:48:21 by upierre-         ###   ########.fr       */
+/*   Updated: 2016/05/30 18:01:27 by upierre-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,35 +35,38 @@ char	*initialize(fd)
 int		get_next_line(int fd, char **line)
 {
 	size_t			j;
-	static int		i = 0;
-	static char		*suite = NULL;
 	int				k;
-	//static t_gnl	gnl = (t_gnl){0, NULL};
+	static t_gnl	gnl = (t_gnl){0, NULL};
 
-	if (fd < 0)
+	if (fd < 0 || (gnl.suite == NULL && (gnl.suite = initialize(fd)) == NULL))
 		return (-1);
-	if (suite == NULL)
-		suite = initialize(fd);
-	if (suite == NULL)
+	j = gnl.i;
+	while (gnl.suite[gnl.i] != '\n' && gnl.suite[gnl.i] != '\0')
+		(gnl.i)++;
+	if (!(*line = (char *)malloc(sizeof(char) * ((gnl.i - j) + 1))))
 		return (-1);
-	j = i;
-	while (suite[i] != '\n' && suite[i] != '\0')
-		i++;
-	if (!(*line = (char *)malloc(sizeof(char) * ((i - j) + 1))))
-		return (-1);
-	(*line)[i - j] = '\0';
-	k = 0;
-	if (i - j == 0)
+	(*line)[gnl.i - j] = '\0';
+	if (gnl.i - j == 0)
 		return (0);
 	k = 0;
-	while (suite[j] != '\n')
+	while ((gnl.suite)[j] != '\n')
 	{
-		(*line)[k] = suite[j];
-		if (suite[j] == '\0')
+		(*line)[k] = (gnl.suite)[j];
+		if (gnl.suite[j] == '\0')
 			return (1);
 		j++;
 		k++;
 	}
-	i++;
+	(gnl.i)++;
 	return (1);
-}
+}/*
+
+int		main(void)
+{
+	char *line;
+
+	while (get_next_line(0, &line) > 0)
+	{
+		ft_putendl(line);
+	}
+}*/
